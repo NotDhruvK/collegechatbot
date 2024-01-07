@@ -1,89 +1,117 @@
 import NextAuth from "next-auth"
-import executeQuery from '@/lib/db'
+
 import { compare } from 'bcryptjs';
 import CredentialProvider from "next-auth/providers/credentials"
-
+import GoogleProvider from 'next-auth/providers/google'
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
+import clientPromise from '@/lib/mongodb'
 export const authOptions = {
-  // Configure one or more authentication providers
-  session: {
-    strategy: 'jwt',
-  },
-  providers: [
-    CredentialProvider({
-      name: 'credentials',
-      credentials: {
-        email: {
-          label: 'Email',
-          type: 'email',
-          placeholder: 'Enter your email'
-        },
-        password: {
-
-          label: 'Password',
-          type: 'password',
-        },
-      },
-      authorize: async (credentials) => {
-        let dbUser = await executeQuery({
-          query: `SELECT * FROM user_auth where user_email=? LIMIT 1`,
-          values: [credentials.email]
+    // Configure one or more authentication providers
+    adapter: MongoDBAdapter(clientPromise),
+    providers: [
+        GoogleProvider({
+            id: 'google',
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET
         })
-        if (dbUser.length < 0) return null; // User not fount
+    ],
 
-        if (! await compare(credentials.password, dbUser[0].user_hash)) return null;  // Passwords do not match
-
-
-        /* To fetch user data and store it in user object so that you can access in user session object uncomment following code. */
-        // By default user object contains only user_id, user_email, user_hash.
-
-        /* let userData = await executeQuery({
-          query: `SELECT * FROM user_account where user_id=? LIMIT 1`,
-          values: [dbUser[0].user_id]
-        })
-        if (userData.length < 0) return null; ;// User Data not found 
-       
-        let user = {
-          email: dbUser[0].email,
-          ...userData[0],
-        } */
-
-
-        return { userId: dbUser[0].user_id, email: dbUser[0].user_email, roleId: dbUser[0].user_role_id  } // replace this with user object
-
-      },
-    })
-  ],
-
-  pages: {
-    // signIn: '/auth/login',   // Uncomment this once you have login page
-    error: '/auth/error', // Error code passed in query string as ?error=
-  },
-
-  callbacks: {
-
-    async signIn({ }) {
-      return true;
+    pages: {
+        // signIn: '/auth/login',   // Uncomment this once you have login page
+        error: '/auth/error', // Error code passed in query string as ?error=
     },
 
-    jwt: ({ token, user }) => {
-      if (user) {
-        token = {
-          ...user
+    callbacks: {
+
+        async signIn({ }) {
+            return true;
+        },
+
+        jwt: ({ token, user }) => {
+            if (user) {
+                token = {
+                    ...user
+                }
+            }
+            return token
+        },
+        session: ({ token, session }) => {
+            session.user = {
+                ...token
+            }
+            return session
+        },
+    },
+    secret: process.env.NEXTAUTH_SECRET,
+    session: {
+        strategy: 'jwt',
+        jwt: true,
+        maxAge: 30 * 24 * 60 * 60 // 30 days
+    },
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        signingKey: process.env.JWT_SIGNING_KEY,
+        verificationOptions: {
+            algorithms: ['HS256']
         }
-      }
-      return token
     },
-    session: ({ token, session }) => {
-      session.user = {
-        ...token
-      }
-      return session
+    debug: true,
+    callbacks: {
+        async signIn({ user, account, profile }) {
+            if (!user?.uid) {
+                const query = {
+                    uid: new RegExp(
+                        `^${user.name.replace(/[^a-zA-Z]/g, '').toLowerCase()}`,
+                        'i'
+                    )
+                }
+                const docs = await User.find(query)
+
+                // Generate new uid for the given name
+                let uid = user.name.replace(/[^a-zA-Z]/g, '').toLowerCase()
+                if (docs.length > 0) {
+                    uid += docs.length
+                }
+                user.uid = uid || nanoid(10)
+            }
+            if (account.provider === 'google') {
+                user = {
+                    id: user.id,
+                    uid: user.uid,
+                    name: user.username,
+                    email: user.email,
+                    image: user.image
+                }
+            }
+            return true
+        },
+        async redirect({ url, baseUrl }) {
+            return url.startsWith(baseUrl)
+                ? Promise.resolve(url)
+                : Promise.resolve(baseUrl)
+        },
+        async session({ session, token }) {
+            session.user.uid = token.uid
+            session.user.image = token.picture
+            return session
+        },
+        async jwt({ token, user, account, profile }) {
+            if (user) {
+                token.id = user.uid
+                token.uid = user.uid
+            }
+            if (account) {
+                token.accessToken = account.access_token
+                if (account.provider === 'google') token.id = profile.id
+            }
+            return token
+        }
     },
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  jwt: {
-    encryption: true
-  }
+    pages: {
+        signIn: '/login',
+        signOut: '/',
+        newUser: '/'
+    }
 }
 
 export default NextAuth(authOptions)

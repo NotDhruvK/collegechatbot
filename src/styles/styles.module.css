@@ -1,0 +1,104 @@
+/* Update styles.css for WhatsApp style with white background */
+
+
+
+.chat_container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #dfdede; /* Light gray background */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: black; /* Text color */
+}
+
+.chat_header {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+  background-color: #520909; /* WhatsApp green */
+  color: white; /* Text color */
+}
+
+.chat_header img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chat_header h2 {
+  margin: 0;
+}
+
+.chat_messages {
+  flex-grow: 1;
+  overflow-y: scroll;
+  padding: 15px;
+}
+
+.message {
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  clear: both;
+  overflow-wrap: break-word;
+  display: flex;
+}
+
+.user {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+
+.bot {
+  background-color: #fff;
+  align-self: flex-start;
+  text-align: left;
+}
+
+.chat_input {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border-top: 1px solid #ccc;
+  background-color: #f7f7f7; /* Light gray background */
+}
+
+.user_input {
+  flex-grow: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 20px;
+  background-color: #ffffff; /* White background */
+  margin-right: 10px;
+}
+
+.send_btn {
+  background-color: #075e54; /* WhatsApp green */
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* Add the following style to make send-btn look better on mobile */
+@media (max-width: 600px) {
+  #send_btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+  }
+}
