@@ -1,7 +1,5 @@
 /* Update styles.css for WhatsApp style with white background */
 
-
-
 .chat_container {
   width: 100%;
   max-width: 400px;
@@ -51,6 +49,18 @@
   overflow-wrap: break-word;
   display: flex;
 }
+.chat_buttons {
+  padding: 8px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  max-width: 70%;
+  clear: both;
+  overflow-wrap: break-word;
+  display: flex;
+  background-color: #34a799;
+  align-self: flex-start;
+  text-align: left;
+}
 
 .user {
   background-color: #dcf8c6;
@@ -81,7 +91,11 @@
   background-color: #ffffff; /* White background */
   margin-right: 10px;
 }
-
+.btn_grp {
+  flex: auto;
+  max-width: 70%;
+  flex-direction: row;
+}
 .send_btn {
   background-color: #075e54; /* WhatsApp green */
   border: none;
