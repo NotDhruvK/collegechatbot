@@ -3,14 +3,18 @@ import Style from '@/styles/styles.module.css'
 import { useSession } from "next-auth/react"
 import { signIn } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
-const responses = {
+const responses = { // Databas
     "initial": [{ text: "Welcome to KJ Somaiya College of Engineering", sender: "bot" },
-    { text: "Send us a hi!!", sender: "bot" }, { text: "How can I help you?", sender: "bot", buttons: ["About", "Admissions", "Departments", "Placements", "Contact Us"] }],
-    "about": "KJ Somaiya College of Engineering is a college in Mumbai, India. It is part of the Somaiya Vidyavihar. It was established in 1983 and is affiliated to the University of Mumbai. It offers a degree in Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.",
-    "admission": "Admissions are based on the MHT-CET exam. The college also has a quota for NRI students.",
-    "department": "The college has 5 departments: Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.",
-    "placement": "The college has a placement cell that helps students get placed in companies.",
-    "contact": "You can contact us at KJ Somaiya College of Engineering, Vidyanagar, Vidyavihar, Mumbai, Maharashtra 400077"
+    { text: "Send us a hi!!", sender: "bot" }],
+    
+    "hi": { text: "How can I help you?", sender: "bot", buttons: ["About", "Admissions", "Departments", "Placements", "Contact Us"] },
+    
+    "about": { text: "KJ Somaiya College of Engineering is a college in Mumbai, India. It is part of the Somaiya Vidyavihar. It was established in 1983 and is affiliated to the University of Mumbai. It offers a degree in Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.", sender: "bot" },
+    
+    "admission": { text: "Admissions are based on the MHT-CET exam. The college also has a quota for NRI students.", sender: "bot" },
+    "department": { text: "The college has 5 departments: Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.", sender: "bot" },
+    "placement": { text: "The college has a placement cell that helps students get placed in companies.", sender: "bot" },
+    "contact": { text: "You can contact us at KJ Somaiya College of Engineering, Vidyanagar, Vidyavihar, Mumbai, Maharashtra 400077", sender: "bot" },
 
 }
 export default function Home() {
@@ -24,6 +28,9 @@ export default function Home() {
     function selectMessage(inp) {
         let lower = inp.toLowerCase()
         let msg = "I am sorry, I don't understand that"
+        if (lower.includes("hi") || lower.includes("hello")){
+            msg = responses["hi"]
+        }
         if (lower.includes("about")) {
             msg = responses["about"]
         }
@@ -49,13 +56,15 @@ export default function Home() {
         if (botMessage !== "") {
             userMessage = { text: `${botMessage}`, sender: "user" }
         }
-        let msg = selectMessage(userInput ? userInput : botMessage)
-        let allMessage = [...messages, userMessage, { text: `${msg}`, sender: "bot" }]
+        let inp = userInput ? userInput : botMessage
+        let msg = selectMessage(inp)
+        let allMessage = [...messages, userMessage, msg]
 
         if (!session)
-        {
-            allMessage.push({ text: "For further Information please login", sender: "bot" })
-            if(!firstLoginMessage)
+        {   
+            if (!inp.toLowerCase().includes("hi") && !inp.toLowerCase().includes("hello"))
+                allMessage.push({ text: "For further Information please login", sender: "bot" })
+            if(!firstLoginMessage )
             {
                 setFLM(true)
             }
@@ -80,7 +89,7 @@ export default function Home() {
         <>
 
 
-            <div className={`${Style.chat_container}`}>
+            <div className={`${Style.chat_container} `}>
 
                 <div className={`${Style.chat_header}`}>
                     <img src="/images/KJSCE-Somaiya-Logo.jpg" alt="Chatbot" />
@@ -116,7 +125,7 @@ export default function Home() {
                         onClick={() => signIn('google', { callbackUrl: '/' })}
                         className="h-10 w-full items-center justify-center rounded-sm border-2 border-gray-50 text-center shadow-lg"
                     >
-                        <FcGoogle className="mx-2 my-2 inline h-auto w-5 " />
+                        <FcGoogle className="m-2 inline h-auto w-5 " />
                         <div className="inline font-bold text-slate-600">
                             Continue with Google
                         </div>
