@@ -6,29 +6,34 @@ import { FcGoogle } from 'react-icons/fc'
 const responses = { // Databas
     "initial": [{ text: "Welcome to KJ Somaiya College of Engineering", sender: "bot" },
     { text: "Send us a hi!!", sender: "bot" }],
-    
+
     "hi": { text: "How can I help you?", sender: "bot", buttons: ["About", "Admissions", "Departments", "Placements", "Contact Us"] },
-    
+
     "about": { text: "KJ Somaiya College of Engineering is a college in Mumbai, India. It is part of the Somaiya Vidyavihar. It was established in 1983 and is affiliated to the University of Mumbai. It offers a degree in Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.", sender: "bot" },
-    
+
     "admission": { text: "Admissions are based on the MHT-CET exam. The college also has a quota for NRI students.", sender: "bot" },
-    "department": { text: "The college has 5 departments: Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.", sender: "bot" },
+    "department": { text: "The college has 5 departments: Computer Engineering, Electronics Engineering, Information Technology, Electronics and Telecommunication Engineering, and Mechanical Engineering.", sender: "bot", buttons: ['btech-dates'] },
     "placement": { text: "The college has a placement cell that helps students get placed in companies.", sender: "bot" },
     "contact": { text: "You can contact us at KJ Somaiya College of Engineering, Vidyanagar, Vidyavihar, Mumbai, Maharashtra 400077", sender: "bot" },
 
 }
+
+// $>
+
+
 export default function Home() {
 
     const { data: session, status } = useSession()
 
-    const [messages, setMessages] = useState(responses["initial"]);
+    const [messages, setMessages] = useState([{ text: "Welcome to KJ Somaiya College of Engineering", sender: "bot" },
+    { text: "Send us a hi!!", sender: "bot" }]);
     const [userInput, setUserInput] = useState("");
     const [firstLoginMessage, setFLM] = useState(false);
 
     function selectMessage(inp) {
         let lower = inp.toLowerCase()
         let msg = "I am sorry, I don't understand that"
-        if (lower.includes("hi") || lower.includes("hello")){
+        if (lower.includes("hi") || lower.includes("hello")) {
             msg = responses["hi"]
         }
         if (lower.includes("about")) {
@@ -49,27 +54,44 @@ export default function Home() {
         return msg
     }
 
-    function sendMessage(botMessage = "") {
-        console.log(userMessage, userInput);
+    async function sendMessage(botMessage = "") {
         var userMessage = { text: `${userInput}`, sender: "user" }
 
         if (botMessage !== "") {
             userMessage = { text: `${botMessage}`, sender: "user" }
         }
         let inp = userInput ? userInput : botMessage
-        let msg = selectMessage(inp)
-        let allMessage = [...messages, userMessage, msg]
+        // let msg = selectMessage(inp)
 
-        if (!session)
-        {   
-            if (!inp.toLowerCase().includes("hi") && !inp.toLowerCase().includes("hello"))
-                allMessage.push({ text: "For further Information please login", sender: "bot" })
-            if(!firstLoginMessage )
-            {
+        let res = await fetch("/api/getnext", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userMessage: inp
+            })
+        })
+        let data = await res.json()
+        let msg = data.botMessage
+        console.log(data, "data");
+        if (data.error) {
+            console.log(data.error, "error");
+            if (data.error === "Unauthenticated" && !firstLoginMessage) {
                 setFLM(true)
             }
         }
-            
+
+        let allMessage = [...messages, userMessage, msg]
+
+        // if (!session) {
+        //     if (!inp.toLowerCase().includes("hi") && !inp.toLowerCase().includes("hello"))
+        //         allMessage.push({ text: "For further Information please login", sender: "bot" })
+        //     if (!firstLoginMessage) {
+        //         setFLM(true)
+        //     }
+        // }
+
         setUserInput("")
         setMessages(allMessage);
     }
@@ -83,7 +105,12 @@ export default function Home() {
     useEffect(() => {
         scrollToBottom()
     }, [messages]);
-
+    
+    function capitalizeFirstLetter(text) {
+        return text.split('-').map((word) => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(" ");
+    }
 
     return (
         <>
@@ -101,16 +128,45 @@ export default function Home() {
                     {
                         messages.map((message, index) => (
                             <>
-                                <div className={`${Style.message} ${Style[message.sender]}`} key={index}>
-                                    <div>{message.text}</div>
+                                <div key={index}>
+                                    {message.text.includes('$>') ? (
+                                        message.text.split('$>').map((part, index) => (
+                                            <div key={index} className={`${Style.message} ${Style[message.sender]}`}>{capitalizeFirstLetter(part)}</div>
+                                        ))
+                                    ) : (
+                                            <div className={`${Style.message} ${Style[message.sender]}`}>{capitalizeFirstLetter(message.text)}</div>
+                                    )}
                                 </div>
                                 <div className={`${Style.btn_grp}`}>
                                     {
-                                        message.buttons ? message.buttons.map((text, index) => (
+                                        message.files ? message.files.map((text, index) => {
+                                            if (text === '') {
+                                                return <></>
+                                            } else {
+                                                return (<>
+                                                    <a key={index} className={` ${Style.chat_buttons} `} target='_blank' href={ text } >{ text }</a>
+                                                </>)
 
-                                            <button key={index} className={` ${Style.chat_buttons} `} onClick={() => { setUserInput(text); sendMessage(text) }}>{text}</button>
 
-                                        )) : <></>
+                                            }
+
+                                        }) : <></>
+                                    }
+                                </div>
+                                <div className={`${Style.btn_grp}`}>
+                                    {
+                                        message.buttons ? message.buttons.map((text, index) => {
+                                            if (text === '') {
+                                                return <></>
+                                            } else {
+                                                return (<>
+                                                    <button key={index} className={` ${Style.chat_buttons} `} onClick={() => { setUserInput(text); sendMessage(text) }}>{text.split('-').map((word) => { return word.charAt(0).toUpperCase() + word.slice(1); }).join(" ")}</button>
+                                                </>)
+
+
+                                            }
+
+                                        }) : <></>
                                     }
                                 </div>
                             </>

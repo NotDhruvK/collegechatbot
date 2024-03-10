@@ -7,7 +7,6 @@ if (!process.env.MONGODB_URI) {
 
 const uri = process.env.MONGODB_URI
 const options = {
-  useUnifiedTopology: true
 }
 
 let client
