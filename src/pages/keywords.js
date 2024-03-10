@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 const Keywords = ({ messages: initalMessages }) => {
-    const [messages, setMessages] = useState(initalMessages);
+    const [messages, setMessages] = useState(initalMessages.reverse());
 
     const [uploadData, setFormData] = useState({
         message: "",
@@ -37,7 +37,7 @@ const Keywords = ({ messages: initalMessages }) => {
                 auth: uploadData.auth
             })
         }).then(res => res.json())
-            .then(data => { console.log(data.message); setMessages(data.messages); setFormData({ message: "", keywords: "", button: "", update: false, id: "", files: "", auth: false }) })
+            .then(data => { console.log(data.message); setMessages(data.messages.reverse()); setFormData({ message: "", keywords: "", button: "", update: false, id: "", files: "", auth: false }) })
     }
     const del = async (del) => {
 
@@ -67,6 +67,31 @@ const Keywords = ({ messages: initalMessages }) => {
     return (
         <>
             <div class="container mx-auto px-4 py-8">
+                <form class="my-8 ">
+                    <label class="block mb-2" htmlFor="keyword">Keyword</label>
+                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="keyword" id="keyword" value={uploadData.keywords} onChange={(e) => setFormData({ ...uploadData, keywords: e.target.value })} />
+                    <label class="block mb-2" htmlFor="message">Message</label>
+                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="message" id="message" value={uploadData.message} onChange={(e) => setFormData({ ...uploadData, message: e.target.value })} />
+                    <label class="block mb-2" htmlFor="button">Button</label>
+                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="button" id="button" value={uploadData.button} onChange={(e) => setFormData({ ...uploadData, button: e.target.value })} />
+                    <label class="block mb-2" htmlFor="files">Files URLs</label>
+                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="files" id="files" value={uploadData.files} onChange={(e) => setFormData({ ...uploadData, files: e.target.value })} />
+
+                    <label htmlFor="auth-toggle" className="block mb-2 mr-2">Auth Required?</label>
+
+                    <input
+                        type="checkbox"
+                        id="auth-toggle"
+                        class="border border-gray-400 py-2 px-4 mb-4"
+                        value={uploadData.auth}
+                        onChange={(e) => setFormData({ ...uploadData, auth: e.target.checked })}
+                    />
+
+                    <br />
+
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={submit}>Submit</button>
+                </form>
+            
                 <table class="table-auto w-full">
                     <thead>
                         <tr>
@@ -126,30 +151,7 @@ const Keywords = ({ messages: initalMessages }) => {
                     </tbody>
                 </table>
 
-                <form class="mt-8">
-                    <label class="block mb-2" htmlFor="keyword">Keyword</label>
-                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="keyword" id="keyword" value={uploadData.keywords} onChange={(e) => setFormData({ ...uploadData, keywords: e.target.value })} />
-                    <label class="block mb-2" htmlFor="message">Message</label>
-                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="message" id="message" value={uploadData.message} onChange={(e) => setFormData({ ...uploadData, message: e.target.value })} />
-                    <label class="block mb-2" htmlFor="button">Button</label>
-                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="button" id="button" value={uploadData.button} onChange={(e) => setFormData({ ...uploadData, button: e.target.value })} />
-                    <label class="block mb-2" htmlFor="files">Files URLs</label>
-                    <input class="border border-gray-400 py-2 px-4 mb-4 w-full" type="text" name="files" id="files" value={uploadData.files} onChange={(e) => setFormData({ ...uploadData, files: e.target.value })} />
-
-                    <label htmlFor="auth-toggle" className="block mb-2 mr-2">Auth Required?</label>
-
-                    <input
-                        type="checkbox"
-                        id="auth-toggle"
-                        class="border border-gray-400 py-2 px-4 mb-4"
-                        value={uploadData.auth}
-                        onChange={(e) => setFormData({ ...uploadData, auth: e.target.checked })}
-                    />
-                    
-                    <br />
-
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={submit}>Submit</button>
-                </form>
+               
             </div>
 
 
@@ -169,7 +171,7 @@ export async function getServerSideProps() {
     } else {
         return {
             props: {
-                messages: data,
+                messages: data, 
             }
         }
     }
