@@ -2,8 +2,11 @@ import React from 'react'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 const Keywords = ({ messages: initalMessages }) => {
+    
+    const { data: session } = useSession()
+    
     const [messages, setMessages] = useState(initalMessages.reverse());
-
+    
     const [uploadData, setFormData] = useState({
         message: "",
         keywords: "",
@@ -13,7 +16,10 @@ const Keywords = ({ messages: initalMessages }) => {
         auth: false,
         id: ""
     });
-
+    
+    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
+        return <div>Access Denied</div>
+    }
     const submit = async () => {
 
         if (uploadData.message === "" || uploadData.keywords === "") {
