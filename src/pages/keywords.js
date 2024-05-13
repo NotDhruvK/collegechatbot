@@ -5,7 +5,7 @@ const Keywords = ({ messages: initalMessages }) => {
     
     const { data: session } = useSession()
     console.log(session)
-    console.log(session.user.email)
+    console.log(session?.user?.email)
     console.log(process.env.ADMIN_EMAIL)
     const [messages, setMessages] = useState(initalMessages.reverse());
     
