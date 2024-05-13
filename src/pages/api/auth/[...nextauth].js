@@ -56,57 +56,57 @@ export const authOptions = {
         }
     },
     debug: true,
-    callbacks: {
-        async signIn({ user, account, profile }) {
-            if (!user?.uid) {
-                const query = {
-                    uid: new RegExp(
-                        `^${user.name.replace(/[^a-zA-Z]/g, '').toLowerCase()}`,
-                        'i'
-                    )
-                }
-                const docs = await User.find(query)
+    // callbacks: {
+    //     async signIn({ user, account, profile }) {
+    //         if (!user?.uid) {
+    //             const query = {
+    //                 uid: new RegExp(
+    //                     `^${user.name.replace(/[^a-zA-Z]/g, '').toLowerCase()}`,
+    //                     'i'
+    //                 )
+    //             }
+    //             const docs = await User.find(query)
 
-                // Generate new uid for the given name
-                let uid = user.name.replace(/[^a-zA-Z]/g, '').toLowerCase()
-                if (docs.length > 0) {
-                    uid += docs.length
-                }
-                user.uid = uid || nanoid(10)
-            }
-            if (account.provider === 'google') {
-                user = {
-                    id: user.id,
-                    uid: user.uid,
-                    name: user.username,
-                    email: user.email,
-                    image: user.image
-                }
-            }
-            return true
-        },
-        async redirect({ url, baseUrl }) {
-            return url.startsWith(baseUrl)
-                ? Promise.resolve(url)
-                : Promise.resolve(baseUrl)
-        },
-        async session({ session, token }) {
-            session.user.uid = token.uid
-            session.user.image = token.picture
-            return session
-        },
-        async jwt({ token, user, account, profile }) {
-            if (user) {
-                token.id = user.uid
-                token.uid = user.uid
-            }
-            if (account) {
-                token.accessToken = account.access_token
-                if (account.provider === 'google') token.id = profile.id
-            }
-            return token
-        }
-    },
+    //             // Generate new uid for the given name
+    //             let uid = user.name.replace(/[^a-zA-Z]/g, '').toLowerCase()
+    //             if (docs.length > 0) {
+    //                 uid += docs.length
+    //             }
+    //             user.uid = uid || nanoid(10)
+    //         }
+    //         if (account.provider === 'google') {
+    //             user = {
+    //                 id: user.id,
+    //                 uid: user.uid,
+    //                 name: user.username,
+    //                 email: user.email,
+    //                 image: user.image
+    //             }
+    //         }
+    //         return true
+    //     },
+    //     async redirect({ url, baseUrl }) {
+    //         return url.startsWith(baseUrl)
+    //             ? Promise.resolve(url)
+    //             : Promise.resolve(baseUrl)
+    //     },
+    //     async session({ session, token }) {
+    //         session.user.uid = token.uid
+    //         session.user.image = token.picture
+    //         return session
+    //     },
+    //     async jwt({ token, user, account, profile }) {
+    //         if (user) {
+    //             token.id = user.uid
+    //             token.uid = user.uid
+    //         }
+    //         if (account) {
+    //             token.accessToken = account.access_token
+    //             if (account.provider === 'google') token.id = profile.id
+    //         }
+    //         return token
+    //     }
+    // },
     pages: {
         signIn: '/login',
         signOut: '/',
