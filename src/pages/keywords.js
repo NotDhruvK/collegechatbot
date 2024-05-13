@@ -19,7 +19,7 @@ const Keywords = ({ messages: initalMessages }) => {
         id: ""
     });
     
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
+    if (!session || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
         return <div>Access Denied</div>
     }
     const submit = async () => {
