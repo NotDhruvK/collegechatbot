@@ -58,8 +58,10 @@
   overflow-wrap: break-word;
   display: flex;
   background-color: #34a799;
-  align-self: flex-start;
+  /* align-self: flex-start; */
   text-align: left;
+  /* white-space: normal; */
+  word-wrap: break-word;
 }
 
 .user {
@@ -95,6 +97,7 @@
   flex: auto;
   max-width: 70%;
   flex-direction: row;
+  /* text-wrap: wrap; */
 }
 .send_btn {
   background-color: #075e54; /* WhatsApp green */

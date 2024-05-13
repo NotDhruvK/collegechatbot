@@ -152,7 +152,10 @@ export default function Home() {
                                                 return <></>
                                             } else {
                                                 return (<>
-                                                    <a key={index} className={` ${Style.chat_buttons} `} target='_blank' href={ text } >{ text }</a>
+                                                        <div key={index} className={` ${Style.chat_buttons} `}>
+                                                        
+                                                            <a className='text-wrap'  target='_blank' href={ text } >Click Here!</a>
+                                                        </div> 
                                                 </>)
 
 
