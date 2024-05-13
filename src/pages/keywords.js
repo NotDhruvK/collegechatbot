@@ -20,7 +20,7 @@ const Keywords = ({ messages: initalMessages }) => {
             alert("Please fill all the fields")
             return
         }
-
+        console.log(uploadData.keywords.split(",").map((keyword) => keyword.trim()));
         fetch(`api/message`, {
             method: 'POST',
             headers: {

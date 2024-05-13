@@ -14,7 +14,7 @@ export default async function handler(req, res) {
                 let botMessage = {text: "I am sorry, I don't understand that", sender: "bot"};
                 let error = null;
                 const {userMessage} = req.body;
-                
+                console.log(userMessage);
                 let tokens = userMessage.toLowerCase().split(" ");
                 
                 let message = await Message.findOne({keywords: {$in: tokens}});

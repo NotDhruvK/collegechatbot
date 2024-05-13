@@ -56,6 +56,8 @@ export default function Home() {
 
     async function sendMessage(botMessage = "") {
         var userMessage = { text: `${userInput}`, sender: "user" }
+        
+        if(userInput === "") return
 
         if (botMessage !== "") {
             userMessage = { text: `${botMessage}`, sender: "user" }
@@ -140,6 +142,7 @@ export default function Home() {
                                 <div className={`${Style.btn_grp}`}>
                                     {
                                         message.files ? message.files.map((text, index) => {
+                                            
                                             if (text === '') {
                                                 return <></>
                                             } else {
@@ -156,6 +159,7 @@ export default function Home() {
                                 <div className={`${Style.btn_grp}`}>
                                     {
                                         message.buttons ? message.buttons.map((text, index) => {
+                                            console.log(text, "text");
                                             if (text === '') {
                                                 return <></>
                                             } else {
