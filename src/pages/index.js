@@ -77,7 +77,7 @@ export default function Home() {
             },
             body: JSON.stringify({
                 userMessage: inp,
-                // auth: session ? true : false
+                auth: session?.user ? true : false
             })
         })
         let data = await res.json()

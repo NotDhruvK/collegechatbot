@@ -13,7 +13,7 @@ export default async function handler(req, res) {
                 await dbconnect();
                 let botMessage = {text: "I am sorry, I don't understand that", sender: "bot"};
                 let error = null;
-                const {userMessage} = req.body;
+                const {userMessage, auth} = req.body;
                 console.log(userMessage);
                 let tokens = userMessage.toLowerCase().split(" ");
                 
@@ -24,8 +24,8 @@ export default async function handler(req, res) {
                 }else{
                     error = "Message not found";
                 }
-                // && message?.auth
-                if(!session ){
+                // 
+                if(auth && message?.auth ){
                     botMessage = {text: "Please login to view this message", sender: "bot"};
                     error = "Unauthenticated";
                 }
