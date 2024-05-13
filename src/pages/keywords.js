@@ -6,7 +6,8 @@ const Keywords = ({ messages: initalMessages }) => {
     const { data: session } = useSession()
     console.log(session)
     console.log(session?.user?.email)
-    console.log(process.env.ADMIN_EMAIL)
+    console.log(process.env.NEXT_PUBLIC_ADMIN_EMAIL)
+    console.log(session?.user?.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL)
     const [messages, setMessages] = useState(initalMessages.reverse());
     
     const [uploadData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Keywords = ({ messages: initalMessages }) => {
         id: ""
     });
     
-    if (!session || session.user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
+    if (!session || session?.user?.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
         return <div>Access Denied</div>
     }
     const submit = async () => {
