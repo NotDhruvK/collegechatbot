@@ -24,7 +24,7 @@ const responses = { // Databas
 export default function Home() {
 
     const { data: session, status } = useSession()
-    print(session)
+    console.log(session)
 
     const [messages, setMessages] = useState([{ text: "Welcome to KJ Somaiya College of Engineering", sender: "bot" },
     { text: "Send us a hi!!", sender: "bot" }]);
