@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Style from '@/styles/styles.module.css'
 import { useSession } from "next-auth/react"
-import { signIn } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import { FcGoogle } from 'react-icons/fc'
 const responses = { // Databas
     "initial": [{ text: "Welcome to KJ Somaiya College of Engineering", sender: "bot" },
@@ -24,6 +24,7 @@ const responses = { // Databas
 export default function Home() {
 
     const { data: session, status } = useSession()
+    print(session)
 
     const [messages, setMessages] = useState([{ text: "Welcome to KJ Somaiya College of Engineering", sender: "bot" },
     { text: "Send us a hi!!", sender: "bot" }]);
@@ -58,7 +59,11 @@ export default function Home() {
         var userMessage = { text: `${userInput}`, sender: "user" }
         
         if(userInput === "") return
-
+        
+        if(userInput.toLowerCase() == 'logout'){
+            signOut()
+        }
+        
         if (botMessage !== "") {
             userMessage = { text: `${botMessage}`, sender: "user" }
         }
