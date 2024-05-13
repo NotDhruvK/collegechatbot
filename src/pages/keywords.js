@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 const Keywords = ({ messages: initalMessages }) => {
     
     const { data: session } = useSession()
-    print(session)
+    console.log(session)
     const [messages, setMessages] = useState(initalMessages.reverse());
     
     const [uploadData, setFormData] = useState({
