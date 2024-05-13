@@ -24,7 +24,8 @@ export default async function handler(req, res) {
                 }else{
                     error = "Message not found";
                 }
-                if(!session && message?.auth){
+                // && message?.auth
+                if(!session ){
                     botMessage = {text: "Please login to view this message", sender: "bot"};
                     error = "Unauthenticated";
                 }

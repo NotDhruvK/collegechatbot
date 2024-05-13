@@ -76,7 +76,8 @@ export default function Home() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                userMessage: inp
+                userMessage: inp,
+                // auth: session ? true : false
             })
         })
         let data = await res.json()
